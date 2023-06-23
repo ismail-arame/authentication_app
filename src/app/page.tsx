@@ -13,6 +13,7 @@ export default async function Home() {
       {session && session.user ? (
         <>
           <h1>{`Welcome Home ${session?.user?.name}`}</h1>
+          <h2>{session.user.email}</h2>
           <Image
             src={session.user.image as string}
             width={80}

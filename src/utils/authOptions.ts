@@ -5,7 +5,12 @@ import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import clientPromise from "@/lib/mongodb";
+import { Adapter } from "next-auth/adapters";
+
 export const authOptions: NextAuthOptions = {
+  adapter: MongoDBAdapter(clientPromise) as Adapter,
   providers: [
     Auth0Provider({
       clientId: process.env.AUTH0_CLIENT_ID as string,

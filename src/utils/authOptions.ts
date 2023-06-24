@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth";
+import { Account, NextAuthOptions, Profile, Session, User } from "next-auth";
 import Auth0Provider from "next-auth/providers/auth0";
 import TwitterProvider from "next-auth/providers/twitter";
 import DiscordProvider from "next-auth/providers/discord";
@@ -7,7 +7,8 @@ import GoogleProvider from "next-auth/providers/google";
 
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
-import { Adapter } from "next-auth/adapters";
+import { Adapter, AdapterUser } from "next-auth/adapters";
+import { JWT } from "next-auth/jwt";
 
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise) as Adapter,
@@ -35,4 +36,33 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET, //necessary so getServerSession() function works and not throw jwt error
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({
+      token,
+      user,
+      account,
+      profile,
+      isNewUser,
+    }: {
+      token: JWT;
+      user: User | AdapterUser;
+      account: Account | null;
+      profile?: Profile | undefined;
+      isNewUser?: boolean | undefined;
+    }) {
+      if (user) {
+        token.provider = account?.provider; //adding the provider name to the token
+      }
+      return token;
+    },
+    async session({ session, token }: { session: any; token: JWT }) {
+      if (session.user) {
+        session.user.provider = token.provider; //adding the provider name to the session
+      }
+      return session;
+    },
+  },
 };

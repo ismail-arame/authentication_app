@@ -8,7 +8,7 @@ export async function middleware(req: NextRequest) {
   const session = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
-    secureCookie: process.env.NODE_ENV === "production",
+    secureCookie: process.env.NODE_ENV === "production", //cookies are transmitted only over HTTPS
   });
 
   //if the user is not logged in we will redirect him to the authentication page

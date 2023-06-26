@@ -4,6 +4,8 @@ const inter = Inter({ subsets: ["latin"] });
 import NextTopLoader from "nextjs-toploader";
 import NextAuthSessionProvider from "@/providers/sessionProvider";
 import { ChildrenProps } from "@/interfaces/childrenProps";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const metadata = {
   title: "Create Next App",
@@ -14,8 +16,22 @@ export default function RootLayout({ children }: ChildrenProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextTopLoader color="#DE3163" />
-        <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
+        <NextTopLoader color="#DE3163" height={2.5} />
+        <NextAuthSessionProvider>
+          <ToastContainer
+            position="top-left"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
+          {children}
+        </NextAuthSessionProvider>
       </body>
     </html>
   );

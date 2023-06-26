@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+.home {
   background-color: black;
   padding: 0px 5px;
 }

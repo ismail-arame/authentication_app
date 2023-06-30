@@ -4,6 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 import validator from "validator";
 // npm i bcryptjs && npm i --save-dev @types/bcryptjs
 import bcrypt from "bcryptjs";
+import { createActivationToken } from "@/utils/tokenGenerator";
+import sendMail from "@/utils/sendMail";
+import { activateTemplateEmail } from "@/emailTemplates/activate";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,20 +17,29 @@ export async function POST(req: NextRequest) {
     const { firstname, lastname, email, phone, password } = body;
 
     if (!firstname || !lastname || !email || !phone || !email || !password) {
-      return NextResponse.json({
+      const allFields_message = {
         message: "Please fill in all fields.",
+      };
+      return new Response(JSON.stringify(allFields_message), {
+        status: 400,
       });
     }
 
     if (!validator.isEmail(email)) {
-      return NextResponse.json({
+      const notValidEmail_message = {
         message: "Please add a valid email address.",
+      };
+      return new Response(JSON.stringify(notValidEmail_message), {
+        status: 400,
       });
     }
 
     if (!validator.isMobilePhone(phone)) {
-      return NextResponse.json({
+      const notValidPhone_message = {
         message: "Please add a valid phone number.",
+      };
+      return new Response(JSON.stringify(notValidPhone_message), {
+        status: 400,
       });
     }
 
@@ -36,14 +48,18 @@ export async function POST(req: NextRequest) {
       email: email,
     });
     if (user) {
-      return NextResponse.json({
-        errorMessage: "This email address already exists",
+      const email_message = { message: "This email address already exists" };
+      return new Response(JSON.stringify(email_message), {
+        status: 400,
       });
     }
 
     if (password.length < 6) {
-      return NextResponse.json({
+      const minimumPasswordLength_message = {
         message: "Password must be at least 6 characters.",
+      };
+      return new Response(JSON.stringify(minimumPasswordLength_message), {
+        status: 400,
       });
     }
 
@@ -56,12 +72,31 @@ export async function POST(req: NextRequest) {
       password: cryptedPassword,
     });
     await newUser.save();
+
+    /* ----- creating an activation token ----- */
+    const activation_token = createActivationToken({
+      id: newUser._id.toString(),
+    });
+
+    const activation_url = `${process.env.NEXTAUTH_URL}/activate/${activation_token}`;
+
+    /* ----- Sending Mail ----- */
+    await sendMail(
+      newUser.email,
+      newUser.name,
+      "",
+      activation_url,
+      "account activation",
+      activateTemplateEmail
+    );
+
     return NextResponse.json({
       message: "Register success! Please activate your account.",
-    }); // very mecessary to return a response
+    }); // very mecessary to return a response (200 status code by default)
   } catch (error) {
-    return NextResponse.json({
-      message: (error as Error).message,
+    const error_message = { message: (error as Error).message };
+    return new Response(JSON.stringify(error_message), {
+      status: 500,
     });
   }
 }

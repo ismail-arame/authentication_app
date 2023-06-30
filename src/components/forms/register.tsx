@@ -17,6 +17,7 @@ import CheckboxInput from "../inputs/checkboxInput";
 import SlideSubmitButton from "../buttons/slideSubmitButton";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Link from "next/link";
 interface IRegisterFormProps {}
 
 const FormSchema = z
@@ -79,141 +80,147 @@ const RegisterForm: React.FunctionComponent<IRegisterFormProps> = () => {
 
   const onSubmit: SubmitHandler<FormSchemaType> = async (values) => {
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+      const { data } = await axios.post("/api/auth/signup", {
+        ...values,
       });
-      const data = await response.json();
-      console.log(data);
-
-      if (data.message) {
-        toast.success(data.message);
-        reset();
-      }
-      if (data.errorMessage) toast.error(data.errorMessage);
+      reset();
+      toast.success(data.message);
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
     }
   };
   return (
-    <form className="my-8 text-sm" onSubmit={handleSubmit(onSubmit)}>
-      <div className="gap-2 md:flex">
-        {/* Reusable INPUT Component */}
-        <Input
-          name="firstname"
-          label="First name"
-          type="text"
-          icon={<CiUser />}
-          placeholder="firstname"
-          register={register}
-          error={errors?.firstname?.message}
-          disabled={isSubmitting}
-        />
-        <Input
-          name="lastname"
-          label="Last name"
-          type="text"
-          icon={<CiUser />}
-          placeholder="lastname"
-          register={register}
-          error={errors?.lastname?.message}
-          disabled={isSubmitting}
-        />
-      </div>
-      <Input
-        name="email"
-        label="Email"
-        type="text"
-        icon={<FiMail />}
-        placeholder="email@email.com"
-        register={register}
-        error={errors?.email?.message}
-        disabled={isSubmitting}
-      />
-      <Input
-        name="phone"
-        label="Phone number"
-        type="text"
-        icon={<BsTelephone />}
-        placeholder="+(xxx) xx-xx-xx-xx"
-        register={register}
-        error={errors?.phone?.message}
-        disabled={isSubmitting}
-      />
-      <Input
-        name="password"
-        label="Password"
-        type="password"
-        icon={<FiLock />}
-        placeholder="******************"
-        register={register}
-        error={errors?.password?.message}
-        disabled={isSubmitting}
-      />
-      {watch().password?.length > 0 && (
-        <div className="flex flex-col">
-          <div className="flex mt-2 ">
-            {Array.from(Array(5).keys()).map((span, i) => (
-              <span key={i} className="w-1/5 px-1">
-                <div
-                  className={`h-2 rounded-xl ${
-                    passwordScore <= 2
-                      ? "bg-red-500"
-                      : passwordScore < 4
-                      ? "bg-yellow-400"
-                      : "bg-green-600"
-                  }`}
-                ></div>
-              </span>
-            ))}
-          </div>
-          <div className="text-black mt-2">
-            {`${
-              passwordScore === 1
-                ? "Very weak password"
-                : passwordScore === 2
-                ? "weak password"
-                : passwordScore === 3
-                ? "Good Password"
-                : "Strong password"
-            }`}
-          </div>
+    <div className="w-full px-12 py-4">
+      {/* instagram Loading Progress Bar */}
+      {isSubmitting && <span className="_it4vx _72fik"></span>}
+      <h2 className="text-center text-2xl font-bold tracking-wide text-gray-800">
+        Sign Up
+      </h2>
+      <p className="text-center text-sm text-gray-600 mt-2">
+        You already have an account ? &nbsp;
+        <Link
+          href="/authsignin"
+          className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
+        >
+          Sign in
+        </Link>
+      </p>
+      <form className="my-8 text-sm" onSubmit={handleSubmit(onSubmit)}>
+        <div className="gap-2 md:flex">
+          {/* Reusable INPUT Component */}
+          <Input
+            name="firstname"
+            label="First name"
+            type="text"
+            icon={<CiUser />}
+            placeholder="firstname"
+            register={register}
+            error={errors?.firstname?.message}
+            disabled={isSubmitting}
+          />
+          <Input
+            name="lastname"
+            label="Last name"
+            type="text"
+            icon={<CiUser />}
+            placeholder="lastname"
+            register={register}
+            error={errors?.lastname?.message}
+            disabled={isSubmitting}
+          />
         </div>
-      )}
-      <Input
-        name="confirmPassword"
-        label="Confirm password"
-        type="password"
-        icon={<FiLock />}
-        placeholder="******************"
-        register={register}
-        error={errors?.confirmPassword?.message}
-        disabled={isSubmitting}
-      />
-      {/* Checkbox Input Components */}
-      <CheckboxInput
-        type="checkbox"
-        id="accept"
-        register={register}
-        error={errors?.accept?.message}
-      />
-      {errors?.accept && (
-        <p className="text-[13px] xl:text-xs lg:text-xs sm:text-[13px] text-[#ED4337] mt-1">
-          {errors?.accept?.message}
-        </p>
-      )}
-      {/* Submit Button Component */}
-      <SlideSubmitButton
-        type="submit"
-        text="Sign up"
-        slide_text="Secure sign up"
-        icon={<FiLock />}
-        disabled={isSubmitting}
-      />
-    </form>
+        <Input
+          name="email"
+          label="Email"
+          type="text"
+          icon={<FiMail />}
+          placeholder="email@email.com"
+          register={register}
+          error={errors?.email?.message}
+          disabled={isSubmitting}
+        />
+        <Input
+          name="phone"
+          label="Phone number"
+          type="text"
+          icon={<BsTelephone />}
+          placeholder="+(xxx) xx-xx-xx-xx"
+          register={register}
+          error={errors?.phone?.message}
+          disabled={isSubmitting}
+        />
+        <Input
+          name="password"
+          label="Password"
+          type="password"
+          icon={<FiLock />}
+          placeholder="******************"
+          register={register}
+          error={errors?.password?.message}
+          disabled={isSubmitting}
+        />
+        {watch().password?.length > 0 && (
+          <div className="flex flex-col">
+            <div className="flex mt-2 ">
+              {Array.from(Array(5).keys()).map((span, i) => (
+                <span key={i} className="w-1/5 px-1">
+                  <div
+                    className={`h-2 rounded-xl ${
+                      passwordScore <= 2
+                        ? "bg-red-500"
+                        : passwordScore < 4
+                        ? "bg-yellow-400"
+                        : "bg-green-600"
+                    }`}
+                  ></div>
+                </span>
+              ))}
+            </div>
+            <div className="text-black mt-2">
+              {`${
+                passwordScore === 1
+                  ? "Very weak password"
+                  : passwordScore === 2
+                  ? "weak password"
+                  : passwordScore === 3
+                  ? "Good Password"
+                  : "Strong password"
+              }`}
+            </div>
+          </div>
+        )}
+        <Input
+          name="confirmPassword"
+          label="Confirm password"
+          type="password"
+          icon={<FiLock />}
+          placeholder="******************"
+          register={register}
+          error={errors?.confirmPassword?.message}
+          disabled={isSubmitting}
+        />
+        {/* Checkbox Input Components */}
+        <CheckboxInput
+          type="checkbox"
+          id="accept"
+          register={register}
+          error={errors?.accept?.message}
+        />
+        {errors?.accept && (
+          <p className="text-[13px] xl:text-xs lg:text-xs sm:text-[13px] text-[#ED4337] mt-1">
+            {errors?.accept?.message}
+          </p>
+        )}
+        {/* Submit Button Component */}
+        <SlideSubmitButton
+          type="submit"
+          text="Sign up"
+          slide_text="Secure sign up"
+          icon={<FiLock />}
+          disabled={isSubmitting}
+        />
+      </form>
+    </div>
   );
 };
 

@@ -1,9 +1,9 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-export default function SignInAuth() {
+export default function SignInAuth({ className }: { className: string }) {
   return (
-    <button onClick={() => signIn()} className="bg-blue-400">
+    <button onClick={() => signIn()} className={className}>
       SignIn
     </button>
   );

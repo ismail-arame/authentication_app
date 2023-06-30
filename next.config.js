@@ -6,6 +6,7 @@ const nextConfig = {
       "lh3.googleusercontent.com",
       "cdn.discordapp.com",
       "pbs.twimg.com",
+      "res.cloudinary.com",
     ],
   },
 };

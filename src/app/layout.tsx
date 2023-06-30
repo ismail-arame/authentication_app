@@ -16,6 +16,7 @@ export default function RootLayout({ children }: ChildrenProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
+        {/* <span className="_it4vx _72fik"></span> */}
         <NextTopLoader color="#DE3163" height={2.5} />
         <NextAuthSessionProvider>
           <ToastContainer
